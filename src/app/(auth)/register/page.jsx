@@ -1,6 +1,6 @@
 import { AiOutlineUser, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
 import Container from "@/components/shared/Container";
-import LoginForm from "@/components/forms/LoginForm";
+import RegisterForm from "@/components/forms/RegisterForm";
 
 const RegisterPage = () => {
   return (
@@ -69,7 +69,7 @@ const RegisterPage = () => {
                 Fill in your details to get started
               </p>
 
-              <LoginForm />
+              <RegisterForm />
             </div>
           </div>
         </div>

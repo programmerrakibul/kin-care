@@ -51,11 +51,11 @@ const Navbar = () => {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/register"
+              href="/login"
               className="btn btn-ghost btn-sm hidden sm:inline-flex items-center gap-2"
             >
               <HiOutlineUser className="w-5 h-5" />
-              <span>Sign in</span>
+              <span>LogIn</span>
             </Link>
           </div>
         </div>

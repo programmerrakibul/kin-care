@@ -27,20 +27,13 @@ export const postUser = async (payload) => {
 
   const today = new Date();
   const createdAt = today.toISOString();
-  const lastLoggedIn = createdAt;
 
   payload.createdAt = createdAt;
-  payload.lastLoggedIn = lastLoggedIn;
 
   try {
     const isExist = await getUser(payload.email);
 
     if (!!isExist) {
-      await connectDB(usersCollection).updateOne(
-        { email: isExist.email },
-        { $set: { lastLoggedIn } }
-      );
-
       return null;
     }
 
@@ -56,5 +49,33 @@ export const postUser = async (payload) => {
   } catch (err) {
     console.error("Error in postUser:", err);
     throw err;
+  }
+};
+
+export const loginUser = async (credentials) => {
+  if (!credentials?.email || !credentials?.password) {
+    return null;
+  }
+
+  try {
+    const user = await getUser(credentials.email);
+
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      credentials.password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    return user;
+  } catch (err) {
+    console.error("Error in authorize:", err);
+    return null;
   }
 };

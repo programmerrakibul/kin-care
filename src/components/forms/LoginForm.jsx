@@ -1,212 +1,133 @@
 "use client";
 
+import { signIn } from "next-auth/react";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Label from "../ui/Label";
-import {
-  AiOutlineIdcard,
-  AiOutlineLock,
-  AiOutlineMail,
-  AiOutlinePhone,
-  AiOutlineUser,
-} from "react-icons/ai";
-import Input from "../ui/Input";
-import Button from "../ui/Button";
 import Link from "next/link";
+import { AiOutlineLock, AiOutlineMail } from "react-icons/ai";
+import { FaGoogle } from "react-icons/fa";
+import Input from "../ui/Input";
+import Label from "../ui/Label";
+import Button from "../ui/Button";
 import ErrorMessage from "../ui/ErrorMessage";
 import ShowPasswordButton from "../ui/ShowPasswordButton";
-import { postUser } from "@/app/actions/server/auth";
 
 const LoginForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: "onTouched" });
 
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (data) => {
     setLoading(true);
 
     try {
-      const res = await postUser(data);
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
 
-      console.log(res);
-
-      if (res?.insertedId) {
-        alert("Registration successful! Please log in.");
+      if (res.ok) {
+        alert("Login successful!");
       } else {
-        alert("Registration failed! User may already exist.");
+        alert("Login failed! Please check your credentials.");
       }
+
+      console.log({ res });
     } catch (err) {
-      console.error("Error during registration:", err);
+      console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        {/* NID Number */}
-        <div>
-          <Label htmlFor="nid">
-            <span className="flex items-center gap-2">
-              <AiOutlineIdcard className="text-primary" />
-              NID Number
-            </span>
-          </Label>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <div>
+        <Label htmlFor="email">
+          <span className="flex items-center gap-2">
+            <AiOutlineMail className="text-primary" /> Email
+          </span>
+        </Label>
 
+        <Input
+          id="email"
+          type="email"
+          placeholder="you@company.com"
+          {...register("email", {
+            required: "Email is required",
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "Enter a valid email address",
+            },
+          })}
+        />
+
+        <ErrorMessage message={errors.email?.message} />
+      </div>
+
+      <div>
+        <Label htmlFor="password">
+          <span className="flex items-center gap-2">
+            <AiOutlineLock className="text-primary" /> Password
+          </span>
+        </Label>
+
+        <div className="relative">
           <Input
-            id="nid"
-            type="number"
-            placeholder="Enter your NID number"
-            {...register("nid", {
-              required: "NID number is required",
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: { value: 8, message: "Minimum 8 characters" },
             })}
           />
 
-          <ErrorMessage message={errors.nid?.message} />
+          <ShowPasswordButton show={showPassword} setShow={setShowPassword} />
         </div>
 
-        {/* Name */}
-        <div>
-          <Label htmlFor="name">
-            <span className="flex items-center gap-2">
-              <AiOutlineUser className="text-primary" />
-              Full Name
-            </span>
-          </Label>
-          <Input
-            id="name"
-            type="text"
-            placeholder="Enter your full name"
-            {...register("name", {
-              required: "Full name is required",
-              validate: (value) =>
-                !value.trim() ? "Name cannot be empty" : true,
-              minLength: {
-                value: 2,
-                message: "Name must be at least 2 characters",
-              },
-              maxLength: {
-                value: 50,
-                message: "Name must not exceed 50 characters",
-              },
-            })}
-          />
+        <ErrorMessage message={errors.password?.message} />
+      </div>
 
-          <ErrorMessage message={errors.name?.message} />
-        </div>
+      <div className="flex items-center justify-between">
+        <Link href="/register" className="text-sm text-primary hover:underline">
+          Create account
+        </Link>
+      </div>
 
-        {/* Email */}
-        <div>
-          <Label htmlFor="email">
-            <span className="flex items-center gap-2">
-              <AiOutlineMail className="text-primary" />
-              Email Address
-            </span>
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="Enter your email address"
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Please enter a valid email address",
-              },
-            })}
-          />
+      <Button disabled={loading} className="w-full">
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <span className="loading loading-spinner loading-sm" /> Signing
+            in...
+          </span>
+        ) : (
+          "Sign in"
+        )}
+      </Button>
 
-          <ErrorMessage message={errors.email?.message} />
-        </div>
+      <div className="flex items-center gap-3 text-sm text-muted">
+        <span className="flex-1 h-px bg-base-200" />
+        <span>Or continue with</span>
+        <span className="flex-1 h-px bg-base-200" />
+      </div>
 
-        {/* Contact */}
-        <div>
-          <Label htmlFor="contact">
-            <span className="flex items-center gap-2">
-              <AiOutlinePhone className="text-primary" />
-              Contact Number
-            </span>
-          </Label>
-          <Input
-            id="contact"
-            type="tel"
-            placeholder="Enter your contact number"
-            {...register("contact", {
-              required: "Contact number is required",
-              validate: (value) =>
-                !value.trim() ? "Contact number cannot be empty" : true,
-            })}
-          />
-
-          <ErrorMessage message={errors.contact?.message} />
-        </div>
-
-        {/* Password */}
-        <div>
-          <Label htmlFor="password">
-            <span className="flex items-center gap-2">
-              <AiOutlineLock className="text-primary" />
-              Password
-            </span>
-          </Label>
-          <div className="relative">
-            <Input
-              id="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter a strong password"
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 8,
-                  message: "Password must be at least 8 characters",
-                },
-                pattern: {
-                  value:
-                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%#*?&])[A-Za-z\d@$!%#*?&]/,
-                  message:
-                    "Password must contain uppercase, lowercase, number and special character",
-                },
-              })}
-            />
-
-            <ShowPasswordButton show={showPassword} setShow={setShowPassword} />
-          </div>
-
-          <ErrorMessage message={errors.password?.message} />
-        </div>
-
-        {/* Submit Button */}
-        <Button disabled={loading} className="btn-block">
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <span className="loading loading-spinner loading-sm"></span>
-              Creating Account...
-            </span>
-          ) : (
-            "Create Account"
-          )}
-        </Button>
-
-        {/* Login Link */}
-        <div className="text-center mt-6">
-          <p className="text-gray-600">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="text-primary font-bold hover:underline"
-            >
-              Sign In
-            </Link>
-          </p>
-        </div>
-      </form>
-    </>
+      <button
+        type="button"
+        className="flex items-center justify-center gap-2 border rounded-lg px-3 py-2 hover:bg-base-200 w-full"
+        aria-label="Sign in with Google"
+      >
+        <FaGoogle className="w-5 h-5 text-red-500" />
+        <span className="text-sm">Login with Google</span>
+      </button>
+    </form>
   );
 };
 
