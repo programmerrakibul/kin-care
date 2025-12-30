@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
             <Navbar />
           </header>
 
-          <main>{children}</main>
+          <main className="space-y-16 md:space-y-20">{children}</main>
 
           <Footer />
         </AuthProvider>

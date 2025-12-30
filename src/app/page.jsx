@@ -1,4 +1,4 @@
-import LogoutButton from "@/components/ui/LogoutButton";
+import HomePage from "@/components/ui/HomePage";
 
 export const metadata = {
   title: "Home",
@@ -7,14 +7,8 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <div>
-      <main>
-        <h1 className="text-primary">Hello KinCare fellows</h1>
-        <button className="btn btn-primary">Primary</button>
-        <button className="btn btn-secondary">Secondary</button>
-        <button className="btn btn-accent">Accent</button>
-        <LogoutButton />
-      </main>
-    </div>
+    <>
+      <HomePage />
+    </>
   );
 }
