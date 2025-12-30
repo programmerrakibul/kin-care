@@ -120,8 +120,9 @@ const LoginForm = () => {
       </div>
 
       <button
+        onClick={() => signIn("google")}
         type="button"
-        className="flex items-center justify-center gap-2 border rounded-lg px-3 py-2 hover:bg-base-200 w-full"
+        className="flex items-center justify-center gap-2 border rounded-lg px-3 py-2 hover:bg-base-200 w-full cursor-pointer"
         aria-label="Sign in with Google"
       >
         <FaGoogle className="w-5 h-5 text-red-500" />

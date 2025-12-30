@@ -6,6 +6,7 @@ import { HiOutlineMenu, HiOutlineX, HiOutlineUser } from "react-icons/hi";
 import Logo from "../ui/Logo";
 import Container from "./Container";
 import NavLink from "../ui/NavLink";
+// import { useSession } from "next-auth/react";
 
 const NAV_LINKS = [
   { name: "Home", href: "/" },
@@ -16,6 +17,8 @@ const NAV_LINKS = [
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  // const session = useSession();
+  // console.log(session);
 
   return (
     <nav className="bg-base-100 shadow-sm sticky top-0 z-50">
