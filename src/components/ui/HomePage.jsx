@@ -5,6 +5,8 @@ import Container from "../shared/Container";
 import Button from "./Button";
 import { AiFillHeart, AiOutlineCheckCircle } from "react-icons/ai";
 import { FaHandsHelping } from "react-icons/fa";
+import Image from "next/image";
+import aboutImage from "@/assets/images/about_section.avif";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
@@ -47,11 +49,13 @@ const testimonials = [
   },
 ];
 
-const HomePage = () => {
+const HomePage = ({ categories = [] }) => {
+  console.log(categories);
+
   return (
     <>
       {/* Banner / Slider */}
-      <section className="py-12 bg-gradient-to-b from-base-100 to-base-200">
+      <section className="py-12 bg-linear-to-b from-base-100 to-base-200">
         <Container>
           <div className="max-w-6xl mx-auto">
             <Swiper
@@ -83,7 +87,7 @@ const HomePage = () => {
                     </div>
 
                     <div className="flex-1 w-full">
-                      <div className="aspect-[4/3] rounded-md overflow-hidden bg-gray-100">
+                      <div className="aspect-4/3 rounded-md overflow-hidden bg-gray-100">
                         <img
                           src={`https://source.unsplash.com/1200x900/?caregiving,elderly,health&sig=${idx}`}
                           alt={s.title}
@@ -96,6 +100,76 @@ const HomePage = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
+          </div>
+        </Container>
+      </section>
+
+      {/* Service Overview - modernized */}
+      <section className="py-14 bg-linear-to-b from-base-100/60 to-base-200/40">
+        <Container>
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-6">
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
+                Service Overview
+              </h2>
+              <p className="mt-2 text-sm text-muted max-w-xl">
+                Discover our curated care categories — designed to help families
+                and carers find the right match quickly and confidently.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {categories.map((cat) => (
+                <article
+                  key={cat._id}
+                  className="relative group bg-white/75 dark:bg-base-300/60 p-5 rounded-2xl shadow-sm hover:shadow-lg transform transition hover:-translate-y-1 focus-within:-translate-y-1"
+                  tabIndex={0}
+                  aria-labelledby={`cat-${cat._id}`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="shrink-0">
+                      <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-linear-to-br from-primary to-secondary text-white shadow-md">
+                        <span className="font-semibold">
+                          {String(cat.name || "")
+                            .split(" ")
+                            .slice(0, 2)
+                            .map((w) => w[0])
+                            .join("")}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <h3
+                        id={`cat-${cat._id}`}
+                        className="text-base md:text-lg font-semibold truncate"
+                      >
+                        {cat.name}
+                      </h3>
+                      <p className="text-sm text-muted mt-1 line-clamp-2">
+                        Expert-led services and tailored care for{" "}
+                        {cat.name.toLowerCase()} — vetted professionals and easy
+                        booking.
+                      </p>
+                      <div className="mt-4 flex items-center gap-3">
+                        <Link
+                          href={`/services/${cat._id}`}
+                          aria-label={`Explore ${cat.name}`}
+                        >
+                          <Button className="px-4 py-2 text-sm">Explore</Button>
+                        </Link>
+                        <span className="ml-auto text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                          Popular
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* subtle hover accent */}
+                  <span className="pointer-events-none absolute -bottom-3 -right-6 w-36 h-36 bg-linear-to-tr from-primary/5 to-secondary/5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                </article>
+              ))}
+            </div>
           </div>
         </Container>
       </section>
@@ -200,11 +274,13 @@ const HomePage = () => {
 
             <div className="w-full">
               <div className="rounded-lg overflow-hidden shadow-lg">
-                <img
-                  src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3&s=0a1b6c8d7f"
+                <Image
+                  src={aboutImage.src}
                   alt="Caregiving"
                   className="w-full h-80 object-cover"
                   loading="lazy"
+                  width={550}
+                  height={320}
                 />
               </div>
             </div>
@@ -233,21 +309,21 @@ const HomePage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-6 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-lg text-center">
+                <div className="p-6 bg-linear-to-br from-primary/30 to-secondary/30 rounded-lg text-center">
                   <div className="text-3xl font-bold">1.2k+</div>
                   <div className="text-sm text-muted mt-1">Active users</div>
                 </div>
-                <div className="p-6 bg-gradient-to-br from-accent/30 to-primary/10 rounded-lg text-center">
+                <div className="p-6 bg-linear-to-br from-accent/30 to-primary/10 rounded-lg text-center">
                   <div className="text-3xl font-bold">4.9/5</div>
                   <div className="text-sm text-muted mt-1">Average rating</div>
                 </div>
-                <div className="p-6 bg-gradient-to-br from-secondary/20 to-base-200 rounded-lg text-center">
+                <div className="p-6 bg-linear-to-br from-secondary/20 to-base-200 rounded-lg text-center">
                   <div className="text-3xl font-bold">980+</div>
                   <div className="text-sm text-muted mt-1">
                     Successful matches
                   </div>
                 </div>
-                <div className="p-6 bg-gradient-to-br from-primary/10 to-secondary/20 rounded-lg text-center">
+                <div className="p-6 bg-linear-to-br from-primary/10 to-secondary/20 rounded-lg text-center">
                   <div className="text-3xl font-bold">24/7</div>
                   <div className="text-sm text-muted mt-1">
                     Support availability
