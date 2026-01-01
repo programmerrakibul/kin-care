@@ -3,6 +3,7 @@
 import { collections, connectDB } from "@/lib/connectDB";
 import { generateBookingID } from "@/utils/generateBookingID";
 import { ObjectId } from "mongodb";
+import { revalidatePath } from "next/cache";
 
 const bookingID = generateBookingID();
 
@@ -25,21 +26,21 @@ export const getServices = async () => {
   try {
     const res = await connectDB(collections.SERVICES).find({}).toArray();
 
-    const filteredRes = res.map((item) => ({
-      _id: JSON.stringify(item._id),
+    const services = res.map((item) => ({
       ...item,
+      _id: item._id.toString(),
     }));
 
-    return filteredRes;
+    return services;
   } catch (err) {
     console.error("Error fetching services:", err);
-    return null;
+    return [];
   }
 };
 
 export const getServiceById = async (serviceId) => {
   if (!serviceId || serviceId.length !== 24) {
-    return null;
+    return {};
   }
 
   try {
@@ -47,10 +48,10 @@ export const getServiceById = async (serviceId) => {
       _id: new ObjectId(serviceId),
     });
 
-    return { ...service, _id: JSON.stringify(service._id) };
+    return { ...service, _id: service._id.toString() };
   } catch (err) {
     console.error("Error fetching service by ID:", err);
-    return null;
+    return {};
   }
 };
 
@@ -67,11 +68,51 @@ export const postBooking = async (payload) => {
     const result = await connectDB(collections.BOOKINGS).insertOne(payload);
     return {
       ...result,
-      insertedId: JSON.stringify(result.insertedId),
+      insertedId: result.insertedId.toString(),
       bookingID,
     };
   } catch (err) {
     console.error("Error posting booking:", err);
+    return null;
+  }
+};
+
+export const getBookingsByUserEmail = async (email) => {
+  if (!email) {
+    return [];
+  }
+
+  try {
+    const bookings = await connectDB(collections.BOOKINGS)
+      .find({ customerEmail: email })
+      .toArray();
+
+    return bookings.map((booking) => ({
+      ...booking,
+      _id: booking._id.toString(),
+    }));
+  } catch (err) {
+    console.error("Error fetching bookings by user email:", err);
+    return [];
+  }
+};
+
+export const updateBookingStatus = async (id, status) => {
+  if (!id || id.length !== 24 || !status) {
+    return null;
+  }
+
+  try {
+    const result = await connectDB(collections.BOOKINGS).updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { status } }
+    );
+
+    revalidatePath("/my-bookings");
+
+    return result;
+  } catch (err) {
+    console.error("Error updating booking status:", err);
     return null;
   }
 };
