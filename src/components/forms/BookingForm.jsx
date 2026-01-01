@@ -85,7 +85,7 @@ const BookingForm = () => {
     };
 
     try {
-      const { hourlyRate } = await getServiceById(service_id);
+      const { hourlyRate, category, name } = await getServiceById(service_id);
       const price = hourlyRate * bookingData.serviceHour;
 
       const swal = await Swal.fire({
@@ -100,6 +100,9 @@ const BookingForm = () => {
 
       if (swal.isConfirmed) {
         bookingData.price = price;
+        bookingData.caregiverName = name;
+        bookingData.serviceName = category;
+        
         const res = await postBooking(bookingData);
 
         if (res.insertedId) {
