@@ -16,6 +16,7 @@ import {
 import { coverageAreas } from "@/data/coverageAreas";
 import Button from "../ui/Button";
 import { useParams } from "next/navigation";
+import Label from "../ui/Label";
 
 const BookingForm = () => {
   const { service_id } = useParams();
@@ -27,20 +28,7 @@ const BookingForm = () => {
     formState: { errors },
     reset,
     control,
-  } = useForm({
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      bookingDate: "",
-      bookingTime: "",
-      region: "",
-      city: "",
-      area: "",
-      address: "",
-      additionalNotes: "",
-    },
-  });
+  } = useForm();
 
   // Watch form values using useWatch hook
   const selectedRegion = useWatch({
@@ -85,7 +73,7 @@ const BookingForm = () => {
       // Simulate API call
       console.log("Booking Data:", {
         ...data,
-        service_id,
+        serviceID: service_id,
       });
 
       // Here you would normally send the data to your backend
@@ -96,7 +84,6 @@ const BookingForm = () => {
       // });
 
       setIsSubmitted(true);
-      reset();
       setTimeout(() => setIsSubmitted(false), 5000);
     } catch (error) {
       console.error("Booking error:", error);
@@ -132,12 +119,9 @@ const BookingForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Name */}
-            <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  Full Name *
-                </span>
-              </label>
+            <div>
+              <Label htmlFor="name">Full Name *</Label>
+
               <input
                 type="text"
                 placeholder="Enter your full name"

@@ -2,7 +2,7 @@ import BookingForm from "@/components/forms/BookingForm";
 import Container from "@/components/shared/Container";
 import { FaPhone, FaEnvelope, FaInfoCircle } from "react-icons/fa";
 
-const BookingPage = ({ params }) => {
+const BookingPage = () => {
   return (
     <section className="min-h-screen bg-linear-to-br from-blue-50 via-white to-purple-50 py-12 md:py-16">
       <Container>

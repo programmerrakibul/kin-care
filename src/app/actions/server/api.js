@@ -1,4 +1,5 @@
 import { collections, connectDB } from "@/lib/connectDB";
+import { generateBookingID } from "@/utils/generateBookingID";
 import { ObjectId } from "mongodb";
 
 export const getCategories = async () => {
@@ -45,6 +46,23 @@ export const getServiceById = async (serviceId) => {
     return service;
   } catch (err) {
     console.error("Error fetching service by ID:", err);
+    return null;
+  }
+};
+
+export const postBooking = async (bookingData) => {
+  if (!bookingData) {
+    return null;
+  }
+
+  bookingData.createdAt = new Date().toISOString();
+  bookingData.bookingID = generateBookingID();
+
+  try {
+    const result = await connectDB(collections.BOOKINGS).insertOne(bookingData);
+    return result;
+  } catch (err) {
+    console.error("Error posting booking:", err);
     return null;
   }
 };
