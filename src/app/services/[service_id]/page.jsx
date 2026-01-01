@@ -201,10 +201,12 @@ const ServiceDetailsPage = async ({ params }) => {
             </div>
 
             {/* Book Service Button */}
-            <Button className="btn-block">
-              <FaCalendarCheck className="text-xl" />
-              Book Service Now
-            </Button>
+            <Link href={`/booking/${service_id}`}>
+              <Button className="btn-block">
+                <FaCalendarCheck className="text-xl" />
+                Book Service Now
+              </Button>
+            </Link>
 
             {/* Response Time Info */}
             <div className="mt-4 text-center">

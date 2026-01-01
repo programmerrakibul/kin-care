@@ -23,9 +23,6 @@ const ServiceCardSkeleton = () => {
           <div className="h-3 w-5/6 bg-gray-200 rounded"></div>
           <div className="h-3 w-4/6 bg-gray-200 rounded"></div>
         </div>
-
-        {/* Button Skeleton */}
-        <div className="h-12 w-full bg-gray-200 rounded-lg"></div>
       </div>
     </div>
   );

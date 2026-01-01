@@ -22,7 +22,10 @@ const ServiceCard = ({ service }) => {
   } = service || {};
 
   return (
-    <div className="card card-compact lg:card-normal bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 overflow-hidden group">
+    <div
+      onClick={() => router.push(`/services/${_id}`)}
+      className="card card-compact lg:card-normal bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 overflow-hidden group cursor-pointer"
+    >
       {/* Image Container */}
       <figure className="relative h-36 md:h-44 overflow-hidden">
         <Image
@@ -82,16 +85,6 @@ const ServiceCard = ({ service }) => {
         <p className="text-gray-600 text-sm md:text-base mb-4 line-clamp-2">
           {description}
         </p>
-
-        {/* Action Buttons */}
-        <div className="card-actions">
-          <Button
-            onClick={() => router.push(`/services/${_id}`)}
-            className="btn-block"
-          >
-            View Details
-          </Button>
-        </div>
       </div>
     </div>
   );
