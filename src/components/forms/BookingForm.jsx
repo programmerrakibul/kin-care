@@ -17,10 +17,15 @@ import { coverageAreas } from "@/data/coverageAreas";
 import Button from "../ui/Button";
 import { useParams } from "next/navigation";
 import Label from "../ui/Label";
+import { useSession } from "next-auth/react";
+import Input from "../ui/Input";
+import ErrorMessage from "../ui/ErrorMessage";
 
 const BookingForm = () => {
   const { service_id } = useParams();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const { data } = useSession();
+  const user = data?.user || null;
 
   const {
     register,
@@ -70,17 +75,21 @@ const BookingForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      // Simulate API call
-      console.log("Booking Data:", {
+      // Add authenticated user data to booking
+      const bookingData = {
         ...data,
+        customerName: user?.name,
+        customerEmail: user?.email,
         serviceID: service_id,
-      });
+      };
+
+      console.log("Booking Data:", bookingData);
 
       // Here you would normally send the data to your backend
       // const response = await fetch('/api/bookings', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ ...data, service_id })
+      //   body: JSON.stringify(bookingData)
       // });
 
       setIsSubmitted(true);
@@ -118,85 +127,42 @@ const BookingForm = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Name */}
+            {/* Name - Display Only */}
             <div>
-              <Label htmlFor="name">Full Name *</Label>
-
-              <input
-                type="text"
-                placeholder="Enter your full name"
-                className="input input-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg transition"
-                {...register("name", {
-                  required: "Name is required",
-                  minLength: {
-                    value: 2,
-                    message: "Name must be at least 2 characters",
-                  },
-                })}
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.name.message}
-                </p>
-              )}
+              <Label htmlFor="name">Full Name</Label>
+              <div className="input input-bordered border-gray-300 w-full rounded-lg bg-gray-50 flex items-center px-4 py-3 text-gray-700 font-medium">
+                <FaUser className="mr-3 text-blue-600" />
+                {user?.name || "Not available"}
+              </div>
             </div>
 
-            {/* Email */}
+            {/* Email - Display Only */}
             <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  Email Address *
-                </span>
-              </label>
-              <div className="relative">
-                <FaEnvelope className="absolute left-4 top-4 text-gray-400 text-lg" />
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  className="input input-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg pl-12 transition"
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: "Invalid email address",
-                    },
-                  })}
-                />
+              <Label htmlFor="email">Email Address</Label>
+
+              <div className="input input-bordered border-gray-300 w-full rounded-lg bg-gray-50 flex items-center px-4 py-3 text-gray-700 font-medium">
+                <FaEnvelope className="mr-3 text-blue-600" />
+                {user?.email || "Not available"}
               </div>
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.email.message}
-                </p>
-              )}
             </div>
 
             {/* Phone */}
             <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  Phone Number *
-                </span>
-              </label>
+              <Label htmlFor="phone">Phone Number *</Label>
+
               <div className="relative">
-                <FaPhone className="absolute left-4 top-4 text-gray-400 text-lg" />
-                <input
+                <FaPhone className="absolute left-4 top-[50%] -translate-y-[50%] text-gray-400 text-lg z-10" />
+                <Input
                   type="tel"
                   placeholder="+880 1XX XXXXXXX"
-                  className="input input-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg pl-12 transition"
+                  className="pl-12"
                   {...register("phone", {
                     required: "Phone number is required",
-                    pattern: {
-                      value: /^(\+880|0)?[1-9]\d{9}$/,
-                      message: "Invalid phone number",
-                    },
                   })}
                 />
               </div>
-              {errors.phone && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.phone.message}
-                </p>
-              )}
+
+              <ErrorMessage message={errors.phone?.message} />
             </div>
           </div>
         </div>
@@ -211,48 +177,35 @@ const BookingForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Booking Date */}
             <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  Preferred Date *
-                </span>
-              </label>
-              <input
+              <Label htmlFor="bookingDate">Preferred Date *</Label>
+
+              <Input
                 type="date"
                 min={today}
-                className="input input-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg transition"
                 {...register("bookingDate", {
                   required: "Date is required",
                 })}
               />
-              {errors.bookingDate && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.bookingDate.message}
-                </p>
-              )}
+
+              <ErrorMessage message={errors.bookingDate?.message} />
             </div>
 
             {/* Booking Time */}
             <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  Preferred Time *
-                </span>
-              </label>
+              <Label htmlFor="bookingTime">Preferred Time *</Label>
+
               <div className="relative">
-                <FaClock className="absolute left-4 top-4 text-gray-400 text-lg" />
-                <input
+                <FaClock className="absolute left-4 top-[50%] -translate-y-[50%] text-gray-400 text-lg z-10" />
+                <Input
                   type="time"
-                  className="input input-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg pl-12 transition"
+                  className="pl-12"
                   {...register("bookingTime", {
                     required: "Time is required",
                   })}
                 />
               </div>
-              {errors.bookingTime && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.bookingTime.message}
-                </p>
-              )}
+
+              <ErrorMessage message={errors.bookingTime?.message} />
             </div>
           </div>
         </div>
@@ -267,11 +220,7 @@ const BookingForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Region */}
             <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  Region *
-                </span>
-              </label>
+              <Label htmlFor="region">Region *</Label>
               <select
                 className="select select-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg transition"
                 {...register("region", {
@@ -285,20 +234,13 @@ const BookingForm = () => {
                   </option>
                 ))}
               </select>
-              {errors.region && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.region.message}
-                </p>
-              )}
+
+              <ErrorMessage message={errors.region?.message} />
             </div>
 
             {/* City */}
             <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  City *
-                </span>
-              </label>
+              <Label htmlFor="city">City *</Label>
               <select
                 className="select select-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg transition"
                 disabled={!selectedRegion}
@@ -315,20 +257,14 @@ const BookingForm = () => {
                   </option>
                 ))}
               </select>
-              {errors.city && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.city.message}
-                </p>
-              )}
+
+              <ErrorMessage message={errors.city?.message} />
             </div>
 
             {/* Area */}
             <div className="form-control w-full">
-              <label className="label">
-                <span className="label-text font-semibold text-gray-700">
-                  Covered Area *
-                </span>
-              </label>
+              <Label htmlFor="area">Covered Area *</Label>
+
               <select
                 className="select select-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg transition"
                 disabled={!selectedCity}
@@ -345,23 +281,17 @@ const BookingForm = () => {
                   </option>
                 ))}
               </select>
-              {errors.area && (
-                <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                  <FaInfoCircle /> {errors.area.message}
-                </p>
-              )}
+
+              <ErrorMessage message={errors.area?.message} />
             </div>
           </div>
 
           {/* Address */}
           <div className="form-control w-full mt-6">
-            <label className="label">
-              <span className="label-text font-semibold text-gray-700">
-                Detailed Address
-              </span>
-            </label>
+            <Label htmlFor="address">Detailed Address</Label>
+
             <div className="relative">
-              <FaHome className="absolute left-4 top-4 text-gray-400 text-lg" />
+              <FaHome className="absolute left-4 top-3 text-gray-400 text-lg z-10" />
               <textarea
                 placeholder="Enter your complete address (house number, street, building name, etc.)"
                 className="textarea textarea-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg pl-12 transition resize-none"
@@ -374,11 +304,8 @@ const BookingForm = () => {
                 })}
               ></textarea>
             </div>
-            {errors.address && (
-              <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                <FaInfoCircle /> {errors.address.message}
-              </p>
-            )}
+
+            <ErrorMessage message={errors.address?.message} />
           </div>
         </div>
 
@@ -390,11 +317,8 @@ const BookingForm = () => {
           </h2>
 
           <div className="form-control w-full">
-            <label className="label">
-              <span className="label-text font-semibold text-gray-700">
-                Special Requests or Notes
-              </span>
-            </label>
+            <Label htmlFor="additionalNotes">Special Requests or Notes</Label>
+
             <textarea
               placeholder="Any special requirements or additional information we should know?"
               className="textarea textarea-bordered border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 w-full rounded-lg transition resize-none"

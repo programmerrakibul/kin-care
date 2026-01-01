@@ -25,7 +25,7 @@ const BookingPage = () => {
 
           {/* Sidebar - Information Card */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-white rounded-2xl shadow-lg p-8 space-y-6">
+            <div className="sticky top-3 bg-white rounded-2xl shadow-lg p-8 space-y-6">
               {/* Quick Tips */}
               <div>
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">

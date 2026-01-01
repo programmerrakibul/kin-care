@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { HiOutlineMenu, HiOutlineX, HiOutlineUser } from "react-icons/hi";
+import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import Logo from "../ui/Logo";
 import Container from "./Container";
 import NavLink from "../ui/NavLink";
-// import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Avatar from "../ui/Avatar";
+import Button from "../ui/Button";
+import { useRouter } from "next/navigation";
 
 const NAV_LINKS = [
   { name: "Home", href: "/" },
@@ -16,9 +18,10 @@ const NAV_LINKS = [
 ];
 
 const Navbar = () => {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  // const session = useSession();
-  // console.log(session);
+  const { data, status } = useSession();
+  const user = data?.user || null;
 
   return (
     <nav className="bg-base-100 shadow-sm sticky top-0 z-50">
@@ -53,13 +56,16 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="btn btn-ghost btn-sm hidden sm:inline-flex items-center gap-2"
-            >
-              <HiOutlineUser className="w-5 h-5" />
-              <span>LogIn</span>
-            </Link>
+            {status === "loading" ? (
+              "Loading..."
+            ) : status === "authenticated" && user ? (
+              <>
+                <Avatar src={user.image} alt={user.name} size="size-9" />
+                <Button onClick={() => signOut()}>Logout</Button>
+              </>
+            ) : (
+              <Button onClick={() => router.push("/login")}>LogIn</Button>
+            )}
           </div>
         </div>
 
