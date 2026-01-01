@@ -5,8 +5,6 @@ import ServiceCard from "@/components/ui/ServiceCard";
 const ServicesPage = async () => {
   const services = await getServices();
 
-  console.log(services);
-
   return (
     <>
       <section>

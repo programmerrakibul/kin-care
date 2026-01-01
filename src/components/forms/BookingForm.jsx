@@ -20,10 +20,12 @@ import Label from "../ui/Label";
 import { useSession } from "next-auth/react";
 import Input from "../ui/Input";
 import ErrorMessage from "../ui/ErrorMessage";
+import { getServiceById, postBooking } from "@/app/actions/server/api";
+import Swal from "sweetalert2";
+import { getAlert } from "@/utils/getAlert";
 
 const BookingForm = () => {
   const { service_id } = useParams();
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const { data } = useSession();
   const user = data?.user || null;
 
@@ -74,26 +76,39 @@ const BookingForm = () => {
   }, [selectedCity, selectedRegion]);
 
   const onSubmit = async (data) => {
+    const bookingData = {
+      ...data,
+      customerName: user?.name,
+      customerEmail: user?.email,
+      serviceID: service_id,
+      serviceHour: Number(data.serviceHour),
+    };
+
     try {
-      // Add authenticated user data to booking
-      const bookingData = {
-        ...data,
-        customerName: user?.name,
-        customerEmail: user?.email,
-        serviceID: service_id,
-      };
+      const { hourlyRate } = await getServiceById(service_id);
+      const price = hourlyRate * bookingData.serviceHour;
 
-      console.log("Booking Data:", bookingData);
+      const swal = await Swal.fire({
+        title: "Confirm Booking",
+        html: `<p>You are about to book a service at an hourly rate of <strong>$${price}</strong>.</p>
+               <p>Please confirm to proceed with the booking.</p>`,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        allowOutsideClick: false,
+      });
 
-      // Here you would normally send the data to your backend
-      // const response = await fetch('/api/bookings', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(bookingData)
-      // });
+      if (swal.isConfirmed) {
+        bookingData.price = price;
+        const res = await postBooking(bookingData);
 
-      setIsSubmitted(true);
-      setTimeout(() => setIsSubmitted(false), 5000);
+        if (res.insertedId) {
+          getAlert({
+            title: "Booking Successful",
+            text: `Your booking has been submitted successfully! Your booking ID is ${res.bookingID}.`,
+          });
+        }
+      }
     } catch (error) {
       console.error("Booking error:", error);
     }
@@ -108,17 +123,6 @@ const BookingForm = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="bg-white rounded-2xl shadow-lg p-8 md:p-10 space-y-8"
       >
-        {/* Success Message */}
-        {isSubmitted && (
-          <div className="alert alert-success flex items-center gap-3 rounded-xl">
-            <FaCheckCircle className="text-xl" />
-            <div>
-              <p className="font-semibold">Booking submitted successfully!</p>
-              <p className="text-sm">We will confirm your booking shortly.</p>
-            </div>
-          </div>
-        )}
-
         {/* Personal Information Section */}
         <div>
           <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 text-gray-800">
@@ -206,6 +210,24 @@ const BookingForm = () => {
               </div>
 
               <ErrorMessage message={errors.bookingTime?.message} />
+            </div>
+
+            {/* Service Hour */}
+            <div className="form-control w-full">
+              <Label htmlFor="serviceHour">Service Hour *</Label>
+
+              <div className="relative">
+                <FaClock className="absolute left-4 top-[50%] -translate-y-[50%] text-gray-400 text-lg z-10" />
+                <Input
+                  type="number"
+                  className="pl-12"
+                  {...register("serviceHour", {
+                    required: "Service Hour is required",
+                  })}
+                />
+              </div>
+
+              <ErrorMessage message={errors.serviceHour?.message} />
             </div>
           </div>
         </div>

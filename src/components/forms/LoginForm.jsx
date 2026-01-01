@@ -38,8 +38,6 @@ const LoginForm = () => {
       } else {
         alert("Login failed! Please check your credentials.");
       }
-
-      console.log({ res });
     } catch (err) {
       console.error("Login error:", err);
     } finally {

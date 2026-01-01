@@ -33,8 +33,6 @@ const RegisterForm = () => {
     try {
       const res = await postUser(data);
 
-      console.log(res);
-
       if (res?.insertedId) {
         alert("Registration successful! Please log in.");
       } else {

@@ -11,5 +11,5 @@ export const generateBookingID = () => {
     randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
-  return `${prefix}-${year}${month}${randomPart}`;
+  return `${prefix}${year}${month}${randomPart}`;
 };

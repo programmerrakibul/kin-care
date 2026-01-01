@@ -50,8 +50,6 @@ const testimonials = [
 ];
 
 const HomePage = ({ categories = [] }) => {
-  console.log(categories);
-
   return (
     <>
       {/* Banner / Slider */}

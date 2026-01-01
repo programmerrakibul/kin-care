@@ -25,8 +25,7 @@ export const authOptions = {
           provider: "google",
         };
 
-        const res = await postUser(payload);
-        console.log(res);
+        await postUser(payload);
       }
 
       return true;

@@ -1,6 +1,10 @@
+"use server";
+
 import { collections, connectDB } from "@/lib/connectDB";
 import { generateBookingID } from "@/utils/generateBookingID";
 import { ObjectId } from "mongodb";
+
+const bookingID = generateBookingID();
 
 export const getCategories = async () => {
   try {
@@ -43,24 +47,29 @@ export const getServiceById = async (serviceId) => {
       _id: new ObjectId(serviceId),
     });
 
-    return service;
+    return { ...service, _id: JSON.stringify(service._id) };
   } catch (err) {
     console.error("Error fetching service by ID:", err);
     return null;
   }
 };
 
-export const postBooking = async (bookingData) => {
-  if (!bookingData) {
+export const postBooking = async (payload) => {
+  if (!payload) {
     return null;
   }
 
-  bookingData.createdAt = new Date().toISOString();
-  bookingData.bookingID = generateBookingID();
+  payload.createdAt = new Date().toISOString();
+  payload.bookingID = bookingID;
+  payload.status = "pending";
 
   try {
-    const result = await connectDB(collections.BOOKINGS).insertOne(bookingData);
-    return result;
+    const result = await connectDB(collections.BOOKINGS).insertOne(payload);
+    return {
+      ...result,
+      insertedId: JSON.stringify(result.insertedId),
+      bookingID,
+    };
   } catch (err) {
     console.error("Error posting booking:", err);
     return null;
