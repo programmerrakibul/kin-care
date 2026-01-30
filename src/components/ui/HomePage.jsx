@@ -151,7 +151,7 @@ const HomePage = ({ categories = [] }) => {
                       </p>
                       <div className="mt-4 flex items-center gap-3">
                         <Link
-                          href={`/services/${cat._id}`}
+                          href={`/services`}
                           aria-label={`Explore ${cat.name}`}
                         >
                           <Button className="px-4 py-2 text-sm">Explore</Button>
